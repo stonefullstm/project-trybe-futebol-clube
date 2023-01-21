@@ -1,9 +1,9 @@
 import * as express from 'express';
 import userController from '../controllers/user.controller';
+import validateLogin from '../middlewares';
 
 const userRouter = express.Router();
 
-userRouter.post('/', userController.getUserByEmail);
-// userRouter.get('/', (req, res) => res.json({ ok: true }));
+userRouter.post('/', validateLogin, userController.getUserByEmail);
 
 export default userRouter;
