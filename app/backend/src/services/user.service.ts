@@ -12,4 +12,11 @@ const getUserByEmail = async (email: string): Promise<IUser> => {
   };
 };
 
-export default { getUserByEmail };
+const getUserById = async (id: number): Promise<IUser> => {
+  const user = await userModel.findByPk(id, {
+    attributes: { exclude: ['password'] },
+  });
+  return user as unknown as IUser;
+};
+
+export default { getUserByEmail, getUserById };

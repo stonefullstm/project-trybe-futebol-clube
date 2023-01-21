@@ -24,4 +24,11 @@ const getUserByEmail = async (req: Request, res: Response) => {
   res.status(200).json({ token });
 };
 
-export default { getUserByEmail };
+const getRoleUser = async (req: Request, res: Response) => {
+  const { id } = req.body.user;
+  const user = await userService.getUserById(Number(id));
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  return res.status(200).json({ role: user.role });
+};
+
+export default { getUserByEmail, getRoleUser };
