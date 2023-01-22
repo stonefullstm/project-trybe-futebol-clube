@@ -8,3 +8,8 @@ export interface IUser extends ILogin {
   username: string;
   role: string;
 }
+
+export interface ITeam {
+  id?: number;
+  teamName: string;
+}
