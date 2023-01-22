@@ -7,6 +7,7 @@ import userService from '../services/user.service';
 require('dotenv/config');
 
 const secret = process.env.JWT_SECRET || 'seusecretdetoken';
+
 const getUserByEmail = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await userService.getUserByEmail(email);
