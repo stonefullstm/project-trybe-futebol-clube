@@ -6,7 +6,7 @@ import { Response } from 'superagent';
 import { App } from '../app';
 import User from '../database/models/UserModel';
 import { tokenMock } from './mocks/token.mock';
-import { validUserMock } from './mocks/user.mocks';
+import { userMock, validUserMock } from './mocks/user.mocks';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 chai.use(chaiHttp);
@@ -14,11 +14,10 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 const { app } = new App();
+let chaiHttpResponse: Response;
 // const app = require('../app');
 
 describe('Testar rota POST /login', () => {
-  let chaiHttpResponse: Response;
-  let loginToken: string;  
   describe('Quando os dados do body são válidos', () => {
   
     it('Retorna status 200 - sucesso', async () => {
@@ -40,10 +39,6 @@ describe('Testar rota POST /login', () => {
     describe('Quando os dados do body não são válidos', () => {
   
       it('É feita uma requisição sem email', async () => {
-        // sinon.stub(User, 'findOne').resolves(validUserMock as User);
-        // sinon.stub(bcrypt, 'compareSync').returns(true);
-        // sinon.stub(jwt, 'sign').resolves(tokenMock);
-  
         chaiHttpResponse = await chai
         .request(app)
         .post('/login')
@@ -52,10 +47,6 @@ describe('Testar rota POST /login', () => {
         expect(chaiHttpResponse.status).to.be.equal(400);
       });
       it('É feita uma requisição sem senha', async () => {
-        // sinon.stub(User, 'findOne').resolves(validUserMock as User);
-        // sinon.stub(bcrypt, 'compareSync').returns(true);
-        // sinon.stub(jwt, 'sign').resolves(tokenMock);
-  
         chaiHttpResponse = await chai
         .request(app)
         .post('/login')
@@ -75,6 +66,42 @@ describe('Testar rota POST /login', () => {
           
         expect(chaiHttpResponse.status).to.equal(401);
         expect(chaiHttpResponse.body.message).to.equal('Incorrect email or password');
+        (User.findOne as sinon.SinonStub).restore();
+        sinon.restore()
       });
+  });
+});
+
+describe('Testar rota GET /login/validade', () => {
+  it('Retorna status 401 - Token not found', async () => {
+    chaiHttpResponse = await chai.request(app).get('/login/validate');
+    const { body, status } = chaiHttpResponse;
+    expect(body.message).to.equal('Token not found');
+    expect(status).to.equal(401);
+  });
+  it('Retorna status 400 - Expired or invalid token', async () => {  
+    const { body, status } = await chai
+      .request(app)
+      .get('/login/validate')
+      .set({ authorization: 'tokenInválido' });
+
+    expect(body.message).to.equal('Expired or invalid token');
+    expect(status).to.equal(400);
+  });
+  it('É possível buscar um usuário com token válido', async () => {
+    sinon.stub(User, 'findOne').resolves(validUserMock as User);
+    sinon.stub(User, 'findByPk').resolves(userMock as User);
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send({ email: 'admin@admin.com', password: 'secret_admin' });
+    const { body: { token } } = chaiHttpResponse;
+    chaiHttpResponse = await chai
+      .request(app)
+      .get('/login/validate')
+      .set({ authorization: token });
+    const { body, status } = chaiHttpResponse;
+    expect(body).to.deep.equal({ role: 'admin' });
+    expect(status).to.equal(200);
   });
 });
