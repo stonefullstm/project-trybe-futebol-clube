@@ -10,4 +10,15 @@ const getAllMatches = async (): Promise<IMatch[]> => {
   return teams as unknown as IMatch[];
 };
 
-export default { getAllMatches };
+const getMatchesByInProgress = async (inProgress: boolean): Promise<IMatch[]> => {
+  const teams = await matchModel.findAll({
+    where: {
+      inProgress,
+    },
+    include: [{ model: teamModel, as: 'homeTeam', attributes: { exclude: ['id'] } },
+      { model: teamModel, as: 'awayTeam', attributes: { exclude: ['id'] } }],
+  });
+  return teams as unknown as IMatch[];
+};
+
+export default { getAllMatches, getMatchesByInProgress };

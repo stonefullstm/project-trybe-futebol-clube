@@ -6,4 +6,11 @@ const getAllMatches = async (req: Request, res: Response) => {
   return res.status(200).json(matches);
 };
 
-export default { getAllMatches };
+const getMatchesByInProgress = async (req: Request, res: Response) => {
+  const { inProgress } = req.query;
+  const inProgressBool = (inProgress === 'true');
+  const matches = await matchService.getMatchesByInProgress(inProgressBool);
+  return res.status(200).json(matches);
+};
+
+export default { getAllMatches, getMatchesByInProgress };
