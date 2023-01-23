@@ -62,7 +62,7 @@ Match.belongsTo(Team, {
 
 Match.belongsTo(Team, {
   foreignKey: 'awayTeamId',
-  as: 'awayTeamId',
+  as: 'awayTeam',
 });
 
 export default Match;
