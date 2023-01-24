@@ -1,11 +1,12 @@
 import * as express from 'express';
 import matchController from '../controllers/match.controller';
-import { validateToken } from '../middlewares';
+import { validateMatch, validateToken } from '../middlewares';
 
 const matchRouter = express.Router();
 
 // matchRouter.get('/matches', matchController.getMatchesByInProgress);
 matchRouter.get('/', matchController.getAllMatches);
-matchRouter.post('/', validateToken, matchController.createMatch);
+matchRouter.post('/', validateToken, validateMatch, matchController.createMatch);
+matchRouter.patch('/:id/finish', matchController.finishMatch);
 
 export default matchRouter;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import matchService from '../services/match.service';
+import teamService from '../services/team.service';
 
 const getAllMatches = async (req: Request, res: Response) => {
   let matches;
@@ -13,18 +14,24 @@ const getAllMatches = async (req: Request, res: Response) => {
   return res.status(200).json(matches);
 };
 
-const getMatchesByInProgress = async (req: Request, res: Response) => {
-  const { inProgress } = req.query;
-  const inProgressBool = (inProgress === 'true');
-  const matches = await matchService.getMatchesByInProgress(inProgressBool);
-  return res.status(200).json(matches);
-};
-
 const createMatch = async (req: Request, res: Response) => {
   const { user, ...match } = req.body;
+  if (!(await teamService.getTeamById(match.homeTeamId))
+    || !(await teamService.getTeamById(match.awayTeamId))) {
+    return res.status(404).json({ message: 'There is no team with such id!' });
+  }
   const newMatch = await matchService.createMatch(match);
   if (newMatch) return res.status(201).json(newMatch);
   return res.status(500).json({ message: 'Match was not created' });
 };
 
-export default { getAllMatches, getMatchesByInProgress, createMatch };
+const finishMatch = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const finishedMatches = await matchService.finishMatch(Number(id));
+  if (finishedMatches) {
+    return res.status(200).json({ message: 'Finished' });
+  }
+  return res.status(500).json({ message: 'Not finished' });
+};
+
+export default { getAllMatches, createMatch, finishMatch };

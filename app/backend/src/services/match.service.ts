@@ -29,4 +29,12 @@ const createMatch = async (match: IMatch): Promise<IMatch> => {
   return newMatch as unknown as IMatch;
 };
 
-export default { getAllMatches, getMatchesByInProgress, createMatch };
+const finishMatch = async (id: number): Promise<number> => {
+  const [updatedQty] = await matchModel.update(
+    { inProgress: false },
+    { where: { id } },
+  );
+  return updatedQty;
+};
+
+export default { getAllMatches, getMatchesByInProgress, createMatch, finishMatch };
