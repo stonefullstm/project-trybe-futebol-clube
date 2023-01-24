@@ -1,6 +1,6 @@
 import matchModel from '../database/models/MatchModel';
 import teamModel from '../database/models/TeamModel';
-import { IMatch } from '../interfaces';
+import { IMatch, IScore } from '../interfaces';
 
 const getAllMatches = async (): Promise<IMatch[]> => {
   const teams = await matchModel.findAll({
@@ -37,4 +37,16 @@ const finishMatch = async (id: number): Promise<number> => {
   return updatedQty;
 };
 
-export default { getAllMatches, getMatchesByInProgress, createMatch, finishMatch };
+const setMatchScore = async (id: number, score: IScore): Promise<number> => {
+  const [updatedQty] = await matchModel.update(
+    { ...score },
+    { where: { id } },
+  );
+  return updatedQty;
+};
+
+export default { getAllMatches,
+  getMatchesByInProgress,
+  createMatch,
+  finishMatch,
+  setMatchScore };

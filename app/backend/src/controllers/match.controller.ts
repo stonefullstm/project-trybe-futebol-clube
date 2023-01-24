@@ -34,4 +34,13 @@ const finishMatch = async (req: Request, res: Response) => {
   return res.status(500).json({ message: 'Not finished' });
 };
 
-export default { getAllMatches, createMatch, finishMatch };
+const setMatchScore = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const settedMatches = await matchService.setMatchScore(Number(id), req.body);
+  if (settedMatches) {
+    return res.status(200).json({ message: 'Score was setted' });
+  }
+  return res.status(500).json({ message: 'Score was not setted' });
+};
+
+export default { getAllMatches, createMatch, finishMatch, setMatchScore };

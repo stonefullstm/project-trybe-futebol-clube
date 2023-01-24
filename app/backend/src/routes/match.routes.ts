@@ -8,5 +8,6 @@ const matchRouter = express.Router();
 matchRouter.get('/', matchController.getAllMatches);
 matchRouter.post('/', validateToken, validateMatch, matchController.createMatch);
 matchRouter.patch('/:id/finish', matchController.finishMatch);
+matchRouter.patch('/:id', matchController.setMatchScore);
 
 export default matchRouter;
