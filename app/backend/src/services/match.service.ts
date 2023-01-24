@@ -45,11 +45,11 @@ const setMatchScore = async (id: number, score: IScore): Promise<number> => {
   );
   return updatedQty;
 };
+  // sum(if(m.home_team_goals > m.away_team_goals,1,0)*3
+  // + if(m.home_team_goals = m.away_team_goals,1,0)) as totalPoints,
 
 const classificationHomeTeam = async (): Promise<IClassification[]> => {
   const [classification] = await sequelize.query(`select t.team_name as name,
-    sum(if(m.home_team_goals > m.away_team_goals,1,0)*3 
-    + if(m.home_team_goals = m.away_team_goals,1,0)) as totalPoints, 
     count(m.home_team_id) as totalGames,
     sum(if(m.home_team_goals > m.away_team_goals,1,0)) as totalVictories,
     sum(if(m.home_team_goals = m.away_team_goals,1,0)) as totalDraws,
@@ -60,9 +60,9 @@ const classificationHomeTeam = async (): Promise<IClassification[]> => {
     from matches as m INNER JOIN
     teams as t
     on m.home_team_id = t.id
-    where m.in_progress = 0
+    where m.in_progress = false
     group by t.team_name
-    order by totalPoints desc, totalVictories asc, goalsBalance asc, goalsFavor asc, goalsOwn asc`);
+    order by totalVictories asc, goalsBalance asc, goalsFavor asc, goalsOwn asc`);
   return classification as unknown as IClassification[];
 };
 
