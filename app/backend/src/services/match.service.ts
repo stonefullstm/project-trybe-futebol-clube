@@ -1,6 +1,7 @@
+import sequelize from '../database/models';
 import matchModel from '../database/models/MatchModel';
 import teamModel from '../database/models/TeamModel';
-import { IMatch, IScore } from '../interfaces';
+import { IClassification, IMatch, IScore } from '../interfaces';
 
 const getAllMatches = async (): Promise<IMatch[]> => {
   const teams = await matchModel.findAll({
@@ -45,8 +46,30 @@ const setMatchScore = async (id: number, score: IScore): Promise<number> => {
   return updatedQty;
 };
 
+const classificationHomeTeam = async (): Promise<IClassification[]> => {
+  const [classification] = await sequelize.query(`select t.team_name as name,
+    sum(if(m.home_team_goals > m.away_team_goals,1,0)*3 
+    + if(m.home_team_goals = m.away_team_goals,1,0)) as totalPoints, 
+    count(m.home_team_id) as totalGames,
+    sum(if(m.home_team_goals > m.away_team_goals,1,0)) as totalVictories,
+    sum(if(m.home_team_goals = m.away_team_goals,1,0)) as totalDraws,
+    sum(if(m.home_team_goals < m.away_team_goals,1,0)) as totalLosses,
+    sum(m.home_team_goals) as goalsFavor,
+    sum(m.away_team_goals) as goalsOwn,
+    sum(m.home_team_goals-m.away_team_goals) as goalsBalance
+    from matches as m INNER JOIN
+    teams as t
+    on m.home_team_id = t.id
+    where m.in_progress = 0
+    group by t.team_name
+    order by totalPoints desc, totalVictories asc, goalsBalance asc, goalsFavor asc, goalsOwn asc`);
+  return classification as unknown as IClassification[];
+};
+
 export default { getAllMatches,
   getMatchesByInProgress,
   createMatch,
   finishMatch,
-  setMatchScore };
+  setMatchScore,
+  classificationHomeTeam,
+};
