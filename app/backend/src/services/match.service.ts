@@ -21,4 +21,12 @@ const getMatchesByInProgress = async (inProgress: boolean): Promise<IMatch[]> =>
   return teams as unknown as IMatch[];
 };
 
-export default { getAllMatches, getMatchesByInProgress };
+const createMatch = async (match: IMatch): Promise<IMatch> => {
+  const newMatch = await matchModel.create({
+    ...match, inProgress: true,
+  }, { include: [{ model: teamModel, as: 'homeTeam' },
+    { model: teamModel, as: 'awayTeam' }] });
+  return newMatch as unknown as IMatch;
+};
+
+export default { getAllMatches, getMatchesByInProgress, createMatch };
