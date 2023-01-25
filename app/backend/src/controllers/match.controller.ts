@@ -57,24 +57,12 @@ const calculateEfficiency = (array: IClassification[]) => {
 const classificationHomeTeam = async (req: Request, res: Response) => {
   const classification = await matchService.classificationHomeTeam();
   const finalClassification = calculateEfficiency(classification);
-  // classification.map((team: IClassification) => {
-  //   const newTeam = { ...team };
-  //   newTeam.efficiency = Number(((newTeam.totalPoints
-  //     / (newTeam.totalGames * 3)) * 100).toFixed(2));
-  //   return newTeam;
-  // });
   return res.status(200).json(finalClassification);
 };
 
 const classificationAwayTeam = async (req: Request, res: Response) => {
   const classification = await matchService.classificationAwayTeam();
   const finalClassification = calculateEfficiency(classification);
-  // classification.map((team: IClassification) => {
-  //   const newTeam = { ...team };
-  //   newTeam.efficiency = Number(((newTeam.totalPoints
-  //     / (newTeam.totalGames * 3)) * 100).toFixed(2));
-  //   return newTeam;
-  // });
   return res.status(200).json(finalClassification);
 };
 
