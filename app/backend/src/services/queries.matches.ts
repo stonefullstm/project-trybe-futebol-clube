@@ -14,7 +14,7 @@ export const queryHomeTeam = `select t.team_name as name,
   where m.in_progress = false
   group by t.team_name
   order by totalPoints desc, totalVictories desc,
-  goalsBalance desc, goalsFavor desc, goalsOwn desc`;
+  goalsBalance desc, goalsFavor desc, goalsOwn asc`;
 
 export const queryAwayTeam = `select t.team_name as name,
   sum((if(m.away_team_goals > m.home_team_goals,1,0))*3
@@ -32,4 +32,4 @@ export const queryAwayTeam = `select t.team_name as name,
   where m.in_progress = false
   group by t.team_name
   order by totalPoints desc, totalVictories desc,
-  goalsBalance desc, goalsFavor desc, goalsOwn desc`;
+  goalsBalance desc, goalsFavor desc, goalsOwn asc`;

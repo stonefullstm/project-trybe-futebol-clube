@@ -4,11 +4,13 @@ import matchService from '../services/match.service';
 import teamService from '../services/team.service';
 import sortLeaderboard from './sortLeaderboard';
 
+const efficiency = (team: IClassification): number =>
+  Number(((team.totalPoints / (team.totalGames * 3)) * 100).toFixed(2));
+
 const calculateEfficiency = (array: IClassification[]) => {
   const finalArray = array.map((team: IClassification) => {
     const newTeam = { ...team };
-    newTeam.efficiency = Number(((newTeam.totalPoints
-      / (newTeam.totalGames * 3)) * 100).toFixed(2));
+    newTeam.efficiency = efficiency(newTeam);
     return newTeam;
   });
   return finalArray;
@@ -21,16 +23,15 @@ const joinClassifications = (arrayHome: IClassification[], arrayAway: IClassific
     const awayTeam = arrayAway
       .find((away: IClassification) => away.name === home.name);
     if (awayTeam) {
-      homeTeam.totalPoints += awayTeam.totalPoints;
-      homeTeam.totalGames += awayTeam.totalGames;
-      homeTeam.totalVictories += awayTeam.totalVictories;
-      homeTeam.totalDraws += awayTeam.totalDraws;
-      homeTeam.totalLosses += awayTeam.totalLosses;
-      homeTeam.goalsFavor += awayTeam.goalsFavor;
-      homeTeam.goalsOwn += awayTeam.goalsOwn;
-      homeTeam.goalsBalance += awayTeam.goalsBalance;
-      homeTeam.efficiency = Number(((homeTeam.totalPoints
-        / (homeTeam.totalGames * 3)) * 100).toFixed(2));
+      // source: https://bobbyhadz.com/blog/typescript-object-get-key-by-value
+      const keys = Object.keys(awayTeam) as (keyof typeof awayTeam)[];
+      (Object.keys(homeTeam) as (keyof typeof homeTeam)[])
+        .forEach((key, index) => {
+          if (key !== 'name') {
+            homeTeam[key] += Number(awayTeam[keys[index]]);
+          }
+        });
+      homeTeam.efficiency = efficiency(homeTeam);
     }
     return homeTeam;
   });
