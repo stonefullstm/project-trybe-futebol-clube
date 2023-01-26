@@ -2,9 +2,10 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import { Response } from 'superagent';
 import { App } from '../app';
+import sequelize from '../database/models';
 import Match from '../database/models/MatchModel';
 import User from '../database/models/UserModel';
-import { createdMatchMock, matchesMock } from './mocks/matches.mock';
+import { createdMatchMock, homeClassificationMock, matchesMock } from './mocks/matches.mock';
 import { validUserMock } from './mocks/user.mocks';
 // @ts-ignore
 import chaiHttp = require('chai-http');
@@ -90,6 +91,42 @@ describe('Testar rota PATCH /matches', () => {
     .request(app)
     .patch('/matches/1/finish')
 
+    const { status, body } = chaiHttpResponse;
+
+    expect(status).to.be.equal(200);
+    (Match.update as sinon.SinonStub).restore();
+    sinon.restore()
+  });
+});
+
+describe('Testar rota GET /leaderboard', () => {
+  it('Rota /leaderborad/home retorna status 200 - sucesso', async () => {
+    sinon.stub(sequelize, 'query').resolves([homeClassificationMock, true]);
+
+    chaiHttpResponse = await chai
+    .request(app)
+    .get('/leaderboard/home')
+ 
+    const { status, body } = chaiHttpResponse;
+
+    expect(status).to.be.equal(200);
+  });
+  it('Rota /leaderboard/away retorna status 200 - sucesso', async () => {
+
+    chaiHttpResponse = await chai
+    .request(app)
+    .get('/leaderboard/away')
+ 
+    const { status, body } = chaiHttpResponse;
+
+    expect(status).to.be.equal(200);
+  });
+  it('Rota /leaderboard retorna status 200 - sucesso', async () => {
+
+    chaiHttpResponse = await chai
+    .request(app)
+    .get('/leaderboard')
+ 
     const { status, body } = chaiHttpResponse;
 
     expect(status).to.be.equal(200);

@@ -79,14 +79,14 @@ describe('Testar rota GET /login/validade', () => {
     expect(body.message).to.equal('Token not found');
     expect(status).to.equal(401);
   });
-  it('Retorna status 400 - Expired or invalid token', async () => {  
+  it('Retorna status 400 - Token must be a valid token', async () => {  
     const { body, status } = await chai
       .request(app)
       .get('/login/validate')
-      .set({ authorization: 'tokenInválido' });
+      .set({ authorization: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx' });
 
-    expect(body.message).to.equal('Expired or invalid token');
-    expect(status).to.equal(400);
+    expect(body.message).to.equal('Token must be a valid token');
+    expect(status).to.equal(401);
   });
   it('É possível buscar um usuário com token válido', async () => {
     sinon.stub(User, 'findOne').resolves(validUserMock as User);
