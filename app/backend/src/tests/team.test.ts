@@ -1,6 +1,4 @@
-// import * as bcrypt from 'bcryptjs';
 import * as chai from 'chai';
-// import * as jwt from 'jsonwebtoken';
 import * as sinon from 'sinon';
 import { Response } from 'superagent';
 import { App } from '../app';
